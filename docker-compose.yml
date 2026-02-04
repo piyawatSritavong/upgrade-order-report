@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine 
+    container_name: order-report-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-order_report_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-order_report_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: order-report-backend
+    restart: unless-stopped
+    environment:
+      PORT: ${BACKEND_PORT:-8080}
+      DATABASE_URL: ${DATABASE_URL_DOCKER:-postgresql://user:password@db:5432/order_report_db}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: order-report-frontend
+    restart: unless-stopped
+    environment:
+      REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-http://localhost:8080}
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8080}
+      API_INTERNAL_BASE_URL: ${API_INTERNAL_BASE_URL:-http://backend:8080}
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+volumes:
+  db_data:
