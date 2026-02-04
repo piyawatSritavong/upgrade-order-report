@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "http://<IP-EC2-ของคุณ>:8080/:path*"
-    }
-  ]
-}
