@@ -20,19 +20,22 @@ docker-compose ps
 ```
 
 ### 3) การจัดการฐานข้อมูล (Database Management & Seeding)
-รันคำสั่งเหล่านี้ **ตามลำดับ** เพื่อให้ฐานข้อมูลพร้อมใช้งาน:
+รันคำสั่งเหล่านี้ใน **Backend** ตามลำดับ เพื่อให้ฐานข้อมูลพร้อมใช้งาน:
 
 ```bash
-# 1) สร้างไฟล์ Migration จาก Schema
+# 1) เข้าไปที่โฟลเดอร์ backend
+cd backend
+
+# 2) สร้างไฟล์ Migration จาก Schema
 npx drizzle-kit generate
 
-# 2) นำ Migration ไปใช้กับฐานข้อมูล
+# 3) นำ Migration ไปใช้กับฐานข้อมูล
 npm run db:migrate
 
-# 3) บังคับโครงสร้างให้ตรงกับ Schema (กรณี migrate ไม่ครอบคลุม)
+# 4) บังคับโครงสร้างให้ตรงกับ Schema (กรณี migrate ไม่ครอบคลุม)
 npm run db:push
 
-# 4) ดึงข้อมูลจาก External API เข้ามาเก็บลงตาราง (Sync/Seed ข้อมูล)
+# 5) ดึงข้อมูลจาก External API เข้ามาเก็บลงตาราง (Sync/Seed ข้อมูล)
 npm run db:sync
 ```
 
